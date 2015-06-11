@@ -1,0 +1,30 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+Copyright (c) 2015 Vandeuren Glenn. All rights reserved.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>google-calendar-test Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../google-calendar-events.html">
+  </head>
+  <body>
+
+    <p>An example of <code>&lt;google-calendar-events&gt;</code>:</p>
+
+    <button>Add event</button>
+
+    <google-calendar-events client-id="120035609982-ds4i1cegk0fs1gjlunkhp54vnnkh20o0.apps.googleusercontent.com" calendar-id="2d8scssr02mb1eo4rsjemaa4no@group.calendar.google.com"></google-calendar-events>
+
+    <script>
+      document.querySelector('button').addEventListener('click', function() {
+        alert(document.querySelector('google-calendar').newEvent());
+      });
+    </script>
+
+  </body>
+</html>

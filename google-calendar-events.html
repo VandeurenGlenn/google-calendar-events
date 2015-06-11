@@ -1,0 +1,218 @@
+<!--
+@license
+Copyright (c) 2015 Vandeuren Glenn. All rights reserved.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../google-apis/google-client-loader.html">
+<link rel="import" href="../google-signin/google-signin.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <google-calendar-events></google-calendar-events>
+
+@demo
+-->
+<dom-module id="google-calendar-events">
+
+  <style>
+    :host {
+      display: block;
+      box-sizing: border-box;
+    }
+  </style>
+
+  <template>
+    <google-client-loader id="calendar" name="calendar" version="v3"
+      on-google-api-load="listUpcomingEvents"></google-client-loader>
+    <google-signin-aware
+      scopes="https://www.googleapis.com/auth/calendar"
+      is-authorized="{{_signedIn}}"></google-signin-aware>
+    <google-signin
+      client-id="120035609982-ds4i1cegk0fs1gjlunkhp54vnnkh20o0.apps.googleusercontent.com">
+    </google-signin>
+
+    <pre id="output">
+      <template id="te" is="dom-repeat" items="{{events}}">
+        <span>{{item.summary}}</span>
+        <span>{{item.start.dateTime}}</span>
+      </template>
+    </pre>
+  </template>
+
+</dom-module>
+
+
+
+<script>
+
+  Polymer({
+
+    is: 'google-calendar-events',
+
+    properties: {
+
+      /**
+      * Your Client ID can be retrieved from your project in the Google
+      * Developer Console, https://console.developers.google.com
+      */
+      clientId: {
+        type: String,
+        reflectToAttribute: true,
+        value: '<YOUR_ID>'
+      },
+
+      /**
+      * The calendarId off the calendar where you wanna show the events from
+      * You can find the id in the settings section off your calendar
+      */
+      calendarId: {
+        type: String,
+        reflectToAttribute: true,
+        value: '<YOUR_ID>'
+      },
+
+      scopes: {
+        type: Array,
+        reflectToAttribute: true,
+        value: '["https://www.googleapis.com/auth/calendar"]'
+      },
+
+      events: {
+        type: Array,
+        notify: true,
+        reflectToAttribute: true
+      },
+
+      maxResults: {
+        type: Number,
+        reflectToAttribute: true,
+        value: 20
+      },
+
+      /**
+       * Whether or not to display the deleted events
+       */
+      showDeleted: {
+        type: Boolean,
+        value: false
+      },
+
+      timeZone: {
+        type: String,
+        reflectToAttribute: true,
+        value: "Europe/Brussels"
+      },
+
+      newEventTitle: {
+        type: String,
+        reflectToAttribute: true,
+        value: "new event"
+      }
+
+    },
+
+    // Element Behavior
+
+    /**
+     * Print the summary and start datetime/date of the next ten events in
+     * the authorized user's calendar. If no events are found an
+     * appropriate message is printed.
+     */
+    listUpcomingEvents: function() {
+      var request = this.$.calendar.api.events.list({
+        'calendarId': this.calendarId,
+        'timeMin': (new Date()).toISOString(),
+        'showDeleted': this.showDeleted,
+        'singleEvents': true,
+        'maxResults': this.maxResults,
+        'orderBy': 'startTime'
+      });
+
+      request.execute(function(resp) {
+        var events = resp.items;
+        appendPre('Upcoming events:');
+
+        if (events.length > 0) {
+          for (i = 0; i < events.length; i++) {
+            var event = events[i];
+            var when = event.start.dateTime;
+            if (!when) {
+              when = event.start.date;
+            }
+            var te = document.querySelector('google-calendar-events');
+            te.setAttribute("events", JSON.stringify(events) + '\n');
+            // appendPre(event.summary + ' (' + when + ')')
+          }
+        } else {
+          appendPre('No upcoming events found.');
+        }
+
+      });
+    },
+
+    newEvent: function () {
+      var event = {
+        "end": {
+          "dateTime": "2015-07-11T07:02:00",
+          "timeZone": this.timeZone,
+         },
+         "start": {
+          "dateTime": "2015-06-11T07:00:00",
+          "timeZone": this.timeZone,
+         },
+        'summary': this.newEventTitle,
+        'description': "new event",
+
+        "guestsCanInviteOthers": true,
+        "guestsCanSeeOtherGuests": true,
+        "reminders": {
+          "useDefault": true
+        },
+        "anyoneCanAddSelf": true,
+        "creator": {
+        "displayName": "",
+        "email": ""
+        },
+        "location": "",
+        "attendees": [
+          {
+            "email": "vandeurenglenn@gmail.com"
+          }
+        ]
+      };
+
+      var request = this.$.calendar.api.events.insert({
+        'calendarId': this.calendarId,
+        'sendNotifications': true,
+        'maxAttendees': 100,
+        'resource': event
+      });
+
+      request.execute(function(event) {
+        appendPre('Event created: ' + event.htmlLink);
+      });
+    }
+
+  });
+
+</script>
+
+<script type="text/javascript">
+  /**
+   * Append a pre element to the body containing the given message
+   * as its text node.
+   *
+   * @param {string} message Text to be placed in pre element.
+   */
+  function appendPre(message) {
+    var pre = document.getElementById('output');
+
+      // pre.setAttribute("events", message + '\n');
+    var textContent = document.createTextNode(message + '\n');
+    pre.appendChild(textContent);
+  }
+
+</script>

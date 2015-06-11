@@ -1,0 +1,31 @@
+{
+  "name": "google-calendar-events",
+  "version": "1.0.0",
+  "authors": [
+    "Glenn Vandeuren<vandeurenglenn@gmail.com>"
+  ],
+  "description": "An element providing a solution to displaying and creating new google calendar events.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "seed"
+  ],
+  "main": "google-calendar-events.html",
+  "license": "http://vandeurenglenn.github.io/LICENSE.txt",
+  "homepage": "https://github.com/vandeurenglenn/google-calendar-events/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "google-apis": "GoogleWebComponents/google-apis#^1.0.0",
+    "google-signin": "GoogleWebComponents/google-signin#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  }
+}
